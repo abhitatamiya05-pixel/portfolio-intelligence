@@ -206,34 +206,5 @@ display = display.rename(columns={
     "issue_count": "Issues",
 })
 
-def highlight_status(val):
-    c = STATUS_COLORS.get(val, "#64748B")
-    return f"background-color:{c}22;color:{c};font-weight:600;border-radius:4px;padding:1px 5px;"
-
-def highlight_risk_level(val):
-    c = RISK_COLORS.get(val, "#64748B")
-    return f"background-color:{c}22;color:{c};font-weight:600;border-radius:4px;padding:1px 5px;"
-
-def color_variance(val):
-    if val > 20: return "color:#EF4444;font-weight:700"
-    if val > 10: return "color:#F59E0B;font-weight:600"
-    if val < 0: return "color:#10B981"
-    return ""
-
-styled = (
-    display.style
-    .applymap(highlight_status, subset=["Status"])
-    .applymap(highlight_risk_level, subset=["Risk Level"])
-    .applymap(color_variance, subset=["BV%"])
-    .format({
-        "Budget": lambda x: fmt_currency(x),
-        "BV%": "{:+.1f}%",
-        "Slip (d)": "{:+d}",
-        "Done%": "{:.0f}%",
-        "Risk": "{:.0f}",
-    })
-    .hide(axis="index")
-)
-
-st.dataframe(styled, use_container_width=True, height=500)
+st.dataframe(display, use_container_width=True, height=500)
 st.caption(f"Showing {len(df)} of {len(projects)} projects after filters")

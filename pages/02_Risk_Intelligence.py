@@ -99,7 +99,7 @@ with c1:
     fig.add_shape(type="rect", x0=0.5, y0=0.5, x1=1.0, y1=1.0,
                   fillcolor="rgba(239,68,68,0.08)", line_width=0)
     fig.add_shape(type="rect", x0=0, y0=0, x1=0.5, y1=0.5,
-                  fillcolor="#10B98108", line_width=0)
+                  fillcolor="rgba(16,185,129,0.05)", line_width=0)
     fig.add_vline(x=0.5, line_dash="dot", line_color="#94A3B8")
     fig.add_hline(y=0.5, line_dash="dot", line_color="#94A3B8")
 
@@ -168,7 +168,7 @@ with c4:
     fig4.add_trace(go.Scatterpolar(
         r=values_closed, theta=categories_closed,
         fill="toself", name="Avg Risk Score",
-        line_color="#2563EB", fillcolor="#2563EB20",
+        line_color="#2563EB", fillcolor="rgba(37,99,235,0.12)",
     ))
     fig4.add_trace(go.Scatterpolar(
         r=dept_risk["at_risk_pct"].tolist() + [dept_risk["at_risk_pct"].tolist()[0]],
@@ -202,13 +202,13 @@ with c5:
         show_up = upward.head(8)[["project_name", "department", "risk_level", "predicted_risk_level", "risk_score"]]\
             .rename(columns={"project_name": "Project", "department": "Dept",
                              "risk_level": "Reported", "predicted_risk_level": "ML Predicts", "risk_score": "Score"})
-        st.dataframe(show_up.style.hide(axis="index"), use_container_width=True, height=220)
+        st.dataframe(show_up, use_container_width=True, height=220)
 
     if len(downward) > 0:
         st.markdown("**⬇ Over-reported risk (model says lower)**")
         show_dn = downward.tail(5)[["project_name", "risk_level", "predicted_risk_level"]]\
             .rename(columns={"project_name": "Project", "risk_level": "Reported", "predicted_risk_level": "ML Predicts"})
-        st.dataframe(show_dn.style.hide(axis="index"), use_container_width=True, height=160)
+        st.dataframe(show_dn, use_container_width=True, height=160)
 
 with c6:
     st.markdown('<div class="section-header">Critical & High Risk Projects — Action Required</div>', unsafe_allow_html=True)
@@ -224,17 +224,7 @@ with c6:
         "schedule_variance_days": "Slip (d)", "issue_count": "Issues", "completion_pct": "Done%",
     })
 
-    def rl_color(val):
-        c = RISK_COLORS.get(val, "#64748B")
-        return f"background-color:{c}22;color:{c};font-weight:700;border-radius:4px;padding:1px 5px;"
-
-    styled = (
-        urgent.style
-        .applymap(rl_color, subset=["Risk"])
-        .format({"Score": "{:.0f}", "BV%": "{:+.1f}%", "Slip (d)": "{:+d}", "Done%": "{:.0f}%"})
-        .hide(axis="index")
-    )
-    st.dataframe(styled, use_container_width=True, height=420)
+    st.dataframe(urgent, use_container_width=True, height=420)
 
 # ── Risk by Department Heat Table ──────────────────────────────────────────────
 st.markdown('<div class="section-header">Risk Breakdown by Department</div>', unsafe_allow_html=True)
@@ -248,16 +238,4 @@ dept_summary = dept_summary.rename(columns={
     "total_budget_at_risk_fmt": "Budget at Risk",
 })
 
-def color_risk_score(val):
-    if val >= 60: return "color:#EF4444;font-weight:700"
-    if val >= 40: return "color:#F59E0B;font-weight:600"
-    return "color:#10B981"
-
-dept_styled = (
-    dept_summary.style
-    .applymap(color_risk_score, subset=["Avg Risk Score"])
-    .format({"Avg Risk Score": "{:.1f}", "At-Risk %": "{:.0f}%", "Critical": "{:.0f}", "High": "{:.0f}"})
-    .background_gradient(subset=["Avg Risk Score"], cmap="RdYlGn_r", vmin=0, vmax=80)
-    .hide(axis="index")
-)
-st.dataframe(dept_styled, use_container_width=True, height=280)
+st.dataframe(dept_summary, use_container_width=True, height=280)

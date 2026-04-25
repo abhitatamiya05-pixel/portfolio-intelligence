@@ -179,11 +179,11 @@ with c3:
         x=cap_summary["month"], y=cap_summary["avg_utilization"],
         mode="lines+markers", name="Avg Utilization %",
         line=dict(color="#2563EB", width=2.5), marker=dict(size=8),
-        fill="tozeroy", fillcolor="#2563EB15",
+        fill="tozeroy", fillcolor="rgba(37,99,235,0.08)",
     ))
     fig3.add_trace(go.Bar(
         x=cap_summary["month"], y=cap_summary["overloaded_count"],
-        name="Overloaded Resources", marker_color="#EF444450", yaxis="y2",
+        name="Overloaded Resources", marker_color="rgba(239,68,68,0.31)", yaxis="y2",
     ))
     fig3.add_hline(y=100, line_dash="dot", line_color="#EF4444",
                    annotation_text="100% threshold")
@@ -209,24 +209,7 @@ with c4:
         "high_risk_project_count": "High-Risk Projects", "bottleneck_score": "Bottleneck Score",
     })
 
-    def color_util(val):
-        if val > 110: return "color:#EF4444;font-weight:700"
-        if val > 90: return "color:#F59E0B;font-weight:600"
-        return "color:#10B981"
-
-    def color_bottleneck(val):
-        if val > 100: return "background-color:#FEE2E233;font-weight:700"
-        if val > 60: return "background-color:#FEF3C733"
-        return ""
-
-    styled_bt = (
-        bt_display.style
-        .applymap(color_util, subset=["Util %"])
-        .applymap(color_bottleneck, subset=["Bottleneck Score"])
-        .format({"Util %": "{:.0f}%", "Bottleneck Score": "{:.0f}"})
-        .hide(axis="index")
-    )
-    st.dataframe(styled_bt, use_container_width=True, height=340)
+    st.dataframe(bt_display, use_container_width=True, height=340)
 
 # ── Resource table ─────────────────────────────────────────────────────────────
 st.markdown('<div class="section-header">Full Resource Roster with Latest Utilization</div>',
@@ -257,12 +240,5 @@ display_roster = full_roster[[
     "utilization_pct": "Util %", "n_projects": "Projects", "monthly_cost": "Est. Monthly Cost",
 }).sort_values("Util %", ascending=False)
 
-styled_roster = (
-    display_roster.style
-    .applymap(lambda v: "color:#EF4444;font-weight:700" if v > 100 else
-              ("color:#F59E0B" if v > 85 else "color:#10B981"), subset=["Util %"])
-    .format({"Util %": "{:.0f}%", "$/hr": "${:.0f}", "Est. Monthly Cost": "${:,.0f}"})
-    .hide(axis="index")
-)
-st.dataframe(styled_roster, use_container_width=True, height=420)
+st.dataframe(display_roster, use_container_width=True, height=420)
 st.caption(f"Showing {len(display_roster)} of {len(resources)} resources")

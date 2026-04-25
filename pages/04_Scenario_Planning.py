@@ -151,17 +151,7 @@ with tab1:
                                   "risk_level": "Risk", "estimated_budget": "Budget"})\
                 .sort_values("BV Score", ascending=False)
 
-            def rl_color(val):
-                c = RISK_COLORS.get(val, "#64748B")
-                return f"background-color:{c}22;color:{c};font-weight:600;border-radius:4px;padding:1px 5px;"
-
-            st.dataframe(
-                sel_display.style
-                .applymap(rl_color, subset=["Risk"])
-                .format({"Budget": lambda x: fmt_currency(x)})
-                .hide(axis="index"),
-                use_container_width=True, height=320,
-            )
+            st.dataframe(sel_display, use_container_width=True, height=320)
 
             if len(excluded_df) > 0:
                 with st.expander(f"View {len(excluded_df)} excluded projects"):
@@ -171,8 +161,7 @@ with tab1:
                                           "department": "Dept", "business_value_score": "BV Score",
                                           "estimated_budget": "Budget"})\
                         .sort_values("BV Score", ascending=False)
-                    st.dataframe(exc.style.format({"Budget": lambda x: fmt_currency(x)}).hide(axis="index"),
-                                 use_container_width=True, height=240)
+                    st.dataframe(exc, use_container_width=True, height=240)
         else:
             st.info("Configure parameters on the left and click **Run Optimization** to see results.")
 
@@ -344,7 +333,7 @@ with tab3:
         budget_by_q.columns = ["Quadrant", "Total Budget"]
         quadrant_summary = quadrant_summary.merge(budget_by_q, on="Quadrant")
         quadrant_summary["Total Budget"] = quadrant_summary["Total Budget"].apply(fmt_currency)
-        st.dataframe(quadrant_summary.style.hide(axis="index"), use_container_width=True, height=200)
+        st.dataframe(quadrant_summary, use_container_width=True, height=200)
 
     with c_t2:
         st.markdown('<div class="section-header">Department Portfolio Efficiency</div>', unsafe_allow_html=True)
@@ -381,14 +370,7 @@ with tab3:
                               "total_budget": "Total Budget", "project_count": "Projects"})\
             .sort_values("Efficiency Ratio", ascending=False)
 
-        st.dataframe(
-            eff_display.style
-            .format({"Avg BV": "{:.0f}", "Avg Risk": "{:.0f}", "Efficiency Ratio": "{:.2f}",
-                     "Total Budget": lambda x: fmt_currency(x)})
-            .background_gradient(subset=["Efficiency Ratio"], cmap="RdYlGn")
-            .hide(axis="index"),
-            use_container_width=True, height=250,
-        )
+        st.dataframe(eff_display, use_container_width=True, height=250)
 
         st.info(
             "**Efficiency Ratio** = Avg Business Value ÷ Avg Risk Score. "

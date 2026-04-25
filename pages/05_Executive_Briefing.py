@@ -258,7 +258,7 @@ with c_c:
         active_sample, x="completion_pct", y="health_index",
         color="department", color_discrete_map=DEPT_COLORS,
         size="estimated_budget", size_max=18,
-        trendline="ols",
+
         labels={"completion_pct": "Completion %", "health_index": "Health Index"},
     )
     apply_chart_theme(fig_ch, height=240)

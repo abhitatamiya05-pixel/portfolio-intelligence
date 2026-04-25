@@ -186,22 +186,7 @@ with c5:
         "risk_score": "Risk", "budget_variance_pct": "Budget Δ%", "schedule_variance_days": "Slip (days)",
     })
 
-    def color_status(val):
-        c = STATUS_COLORS.get(val, "#64748B")
-        return f"background-color: {c}22; color: {c}; font-weight:600; border-radius:4px; padding:2px 6px;"
-
-    def color_risk(val):
-        if val >= 75: return "color:#EF4444; font-weight:700"
-        if val >= 50: return "color:#F97316; font-weight:600"
-        return "color:#F59E0B"
-
-    styled = top_risk.style\
-        .applymap(color_status, subset=["Status"])\
-        .applymap(color_risk, subset=["Risk"])\
-        .format({"Risk": "{:.0f}", "Budget Δ%": "{:+.1f}%", "Slip (days)": "{:+d}"})\
-        .hide(axis="index")
-
-    st.dataframe(styled, use_container_width=True, height=340)
+    st.dataframe(top_risk, use_container_width=True, height=340)
 
 # ── Sidebar navigation hint ────────────────────────────────────────────────────
 with st.sidebar:
